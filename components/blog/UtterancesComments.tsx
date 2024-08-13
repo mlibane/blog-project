@@ -3,10 +3,10 @@
 import React, { useEffect, useRef } from 'react'
 
 interface UtterancesCommentsProps {
-  repo="mlibane/nidix"
-  issue-term="pathname"
+  repo: string
+  issueTerm: string
   label?: string
-  theme="github-light"
+  theme?: string
 }
 
 const UtterancesComments: React.FC<UtterancesCommentsProps> = ({ repo, issueTerm, label, theme = 'github-light' }) => {

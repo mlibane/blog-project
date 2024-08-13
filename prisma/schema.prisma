@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,9 +10,9 @@ datasource db {
 model Comment {
   id        String   @id @default(cuid())
   content   String
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User     @relation("UserComments", fields: [authorId], references: [id])
   authorId  String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      Post     @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -26,12 +23,27 @@ model Post {
   title       String
   content     String
   published   Boolean   @default(false)
-  author      User      @relation(fields: [authorId], references: [id])
+  author      User      @relation("UserPosts", fields: [authorId], references: [id])
   authorId    String
-  comments    Comment[]
+  comments    Comment[] @relation("PostComments")
+  category    Category? @relation("CategoryPosts", fields: [categoryId], references: [id])
+  categoryId  String?
+  tags        Tag[]     @relation("PostTags")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  posts Post[] @relation("CategoryPosts")
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  posts Post[] @relation("PostTags")
 }
 
 model User {
@@ -42,8 +54,8 @@ model User {
   image         String?
   password      String?
   role          String    @default("USER")
-  posts         Post[]
-  comments      Comment[]
+  posts         Post[]    @relation("UserPosts")
+  comments      Comment[] @relation("UserComments")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
