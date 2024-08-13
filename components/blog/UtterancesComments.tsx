@@ -29,7 +29,9 @@ const UtterancesComments: React.FC<UtterancesCommentsProps> = ({ repo, issueTerm
     containerRef.current?.appendChild(script)
 
     return () => {
-      containerRef.current?.innerHTML = ''
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
     }
   }, [repo, issueTerm, label, theme])
 
