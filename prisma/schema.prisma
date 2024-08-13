@@ -8,46 +8,18 @@ datasource db {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
+  slug        String   @id @default(cuid())
   content   String
-  author    User     @relation("UserComments", fields: [authorId], references: [id])
+  author    User     @relation("UserComments", fields: [authorId], references: [slug])
   authorId  String
-  post      Post     @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade)
+  post      Post     @relation("PostComments", fields: [postId], references: [slug], onDelete: Cascade)
   postId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Post {
-  id          String    @id @default(cuid())
-  title       String
-  content     String
-  published   Boolean   @default(false)
-  author      User      @relation("UserPosts", fields: [authorId], references: [id])
-  authorId    String
-  comments    Comment[] @relation("PostComments")
-  category    Category? @relation("CategoryPosts", fields: [categoryId], references: [id])
-  categoryId  String?
-  tags        Tag[]     @relation("PostTags")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  publishedAt DateTime?
-}
-
-model Category {
-  id    String @id @default(cuid())
-  name  String @unique
-  posts Post[] @relation("CategoryPosts")
-}
-
-model Tag {
-  id    String @id @default(cuid())
-  name  String @unique
-  posts Post[] @relation("PostTags")
-}
-
 model User {
-  id            String    @id @default(cuid())
+  slug            String    @id @default(cuid())
   name          String?
   email         String    @unique
   emailVerified DateTime?
@@ -56,6 +28,40 @@ model User {
   role          String    @default("USER")
   posts         Post[]    @relation("UserPosts")
   comments      Comment[] @relation("UserComments")
+  savedPosts    Post[]    @relation("SavedPosts")
+  readPosts     Post[]    @relation("ReadPosts")
+  preferredCategories Category[] @relation("UserPreferredCategories")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model Post {
+  slug          String    @id @default(cuid())
+  title       String
+  content     String
+  published   Boolean   @default(false)
+  author      User      @relation("UserPosts", fields: [authorId], references: [slug])
+  authorId    String
+  comments    Comment[] @relation("PostComments")
+  category    Category? @relation(fields: [categoryId], references: [slug])
+  categoryId  String?
+  tags        Tag[]
+  savedBy     User[]    @relation("SavedPosts")
+  readBy      User[]    @relation("ReadPosts")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+}
+
+model Category {
+  id        String @id @default(cuid())
+  name      String @unique
+  posts     Post[]
+  preferredBy User[] @relation("UserPreferredCategories")
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  posts Post[] @relation("PostTags")
 }

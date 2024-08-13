@@ -11,7 +11,7 @@ async function getPost(id: string) {
 }
 
 export default async function BlogPost({ params }: { params: { id: string } }) {
-  const post = await getPost(params.id)
+  const post = await getPost(params.postId)
 
   return (
     <div className="max-w-4xl mx-auto py-8">

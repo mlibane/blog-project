@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import prisma from '@/lib/prisma'
@@ -6,47 +8,41 @@ import UtterancesComments from '@/components/blog/UtterancesComments'
 import Comments from '@/components/blog/Comments'
 import SEO from '@/components/SEO'
 
-async function getPost(slug: string) {
+async function getPost(id: string) {
   const post = await prisma.post.findUnique({
-    where: { slug },
+    where: { id },
     include: { author: { select: { name: true } } },
   })
   if (!post) notFound()
   return post
 }
 
-export async function generateStaticParams() {
-  const posts = await prisma.post.findMany({ select: { slug: true } })
-  return posts.map((post) => ({ slug: post.slug }))
-}
-
-export default async function BlogPost({ params }: { params: { slug: string } }) {
-  const post = await getPost(params.slug)
-
-  return <BlogPostClient post={post} />
-}
-
-function BlogPostClient({ post }: { post: any }) {
+export default function BlogPost({ params }: { params: { id: string } }) {
   const { data: session } = useSession()
+  const [post, setPost] = useState<any>(null)
   const [isSaved, setIsSaved] = useState(false)
   const [isRead, setIsRead] = useState(false)
+
+  useEffect(() => {
+    getPost(params.postId).then(setPost)
+  }, [params.postId])
 
   useEffect(() => {
     if (session) {
       fetch('/api/user/preferences')
         .then(res => res.json())
         .then(data => {
-          setIsSaved(data.savedPosts.some((p: any) => p.id === post.id))
-          setIsRead(data.readPosts.some((p: any) => p.id === post.id))
+          setIsSaved(data.savedPosts.some((p: any) => p.id === params.postId))
+          setIsRead(data.readPosts.some((p: any) => p.id === params.postId))
         })
     }
-  }, [session, post.id])
+  }, [session, params.postId])
 
   const handleSave = async () => {
     const res = await fetch('/api/user/preferences', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'savePost', postId: post.id }),
+      body: JSON.stringify({ action: 'savePost', postId: params.postId }),
     })
     if (res.ok) setIsSaved(true)
   }
@@ -55,17 +51,19 @@ function BlogPostClient({ post }: { post: any }) {
     const res = await fetch('/api/user/preferences', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'markAsRead', postId: post.id }),
+      body: JSON.stringify({ action: 'markAsRead', postId: params.postId }),
     })
     if (res.ok) setIsRead(true)
   }
+
+  if (!post) return <div>Loading...</div>
 
   return (
     <>
       <SEO 
         title={`${post.title} | Your Blog Name`}
         description={post.content.substring(0, 160)}
-        canonical={`/posts/${post.slug}`}
+        canonical={`/posts/${post.id}`}
       />
       <div className="max-w-4xl mx-auto py-8">
         <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
@@ -93,7 +91,7 @@ function BlogPostClient({ post }: { post: any }) {
         <h2 className="text-2xl font-bold mb-4">GitHub Comments</h2>
         <UtterancesComments
           repo="your-username/your-repo-name"
-          issueTerm={`Post: ${post.slug}`}
+          issueTerm={`Post: ${post.id}`}
           label="comments"
         />
         

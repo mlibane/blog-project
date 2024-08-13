@@ -13,7 +13,7 @@ const Header = () => {
         <ul className="flex items-center justify-between">
           <li>
             <Link href="/" className="text-2xl font-bold">
-              Nidix Blog
+              Nidix
             </Link>
           </li>
           <li className="flex items-center space-x-4">
