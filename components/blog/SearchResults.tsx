@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 async function searchPosts(searchParams: { q?: string; category?: string; tag?: string }) {
   const params = new URLSearchParams(searchParams as Record<string, string>)
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/search?${params}`)
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/search?${params}`, { cache: 'no-store' })
   if (!res.ok) {
     throw new Error('Failed to fetch posts')
   }
