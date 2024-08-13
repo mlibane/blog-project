@@ -12,9 +12,9 @@ export async function GET(request: Request) {
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     include: {
-      savedPosts: { select: { id: true, title: true } },
-      readPosts: { select: { id: true, title: true } },
-      preferredCategories: { select: { id: true, name: true } },
+      savedPosts: { select: { slug: true, title: true } },
+      readPosts: { select: { slug: true, title: true } },
+      preferredCategories: { select: { slug: true, name: true } },
     },
   })
 
@@ -37,19 +37,19 @@ export async function POST(request: Request) {
   switch (action) {
     case 'savePost':
       await prisma.user.update({
-        where: { id: user.id },
-        data: { savedPosts: { connect: { id: postId } } },
+        where: { slug: user.slug },
+        data: { savedPosts: { connect: { slug: postId } } },
       })
       break
     case 'markAsRead':
       await prisma.user.update({
-        where: { id: user.id },
+        where: { slug: user.slug },
         data: { readPosts: { connect: { id: postId } } },
       })
       break
     case 'setPreferredCategory':
       await prisma.user.update({
-        where: { id: user.id },
+        where: { slug: user.slug },
         data: { preferredCategories: { connect: { id: categoryId } } },
       })
       break

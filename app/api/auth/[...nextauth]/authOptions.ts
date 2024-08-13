@@ -1,11 +1,11 @@
-import { PrismaAdapter } from "@auth/prisma-adapter"
 import { AuthOptions } from "next-auth"
 import GithubProvider from "next-auth/providers/github"
 import GoogleProvider from "next-auth/providers/google"
 import prisma from "@/lib/prisma"
+import { CustomPrismaAdapter } from "@/lib/prismaAdapter"
 
 export const authOptions: AuthOptions = {
-  adapter: PrismaAdapter(prisma) as AuthOptions["adapter"],
+  adapter: CustomPrismaAdapter(prisma),
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID!,
@@ -19,8 +19,8 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
-        session.user.id = user.id;
-        session.user.role = user.role as string;
+        session.user.id = user.id;  // This is now the slug
+        session.user.role = user.role;
       }
       return session;
     },
