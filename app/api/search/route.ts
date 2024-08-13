@@ -14,12 +14,14 @@ export async function GET(request: Request) {
   const posts = await prisma.post.findMany({
     where: {
       AND: [
-        {
-          OR: [
-            { title: { contains: query || '', mode: 'insensitive' } },
-            { content: { contains: query || '', mode: 'insensitive' } },
-          ],
-        },
+        query
+          ? {
+              OR: [
+                { title: { contains: query.toLowerCase() } },
+                { content: { contains: query.toLowerCase() } },
+              ],
+            }
+          : {},
         category ? { category: { name: category } } : {},
         tag ? { tags: { some: { name: tag } } } : {},
       ],
