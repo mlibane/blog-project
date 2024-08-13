@@ -17,15 +17,16 @@ const SearchBar = () => {
   }
 
   return (
-    <form onSubmit={handleSearch} className="flex gap-2">
+    <form onSubmit={handleSearch} className="flex gap-2" role="search">
       <Input
-        type="text"
+        type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search posts..."
         className="flex-grow"
+        aria-label="Search posts"
       />
-      <Button type="submit">Search</Button>
+      <Button type="submit" aria-label="Submit search">Search</Button>
     </form>
   )
 }
