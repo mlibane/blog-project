@@ -19,8 +19,8 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
-        session.user.id = user.id;  // This is now the slug
-        session.user.role = user.role;
+        session.user.id = user.id;
+        session.user.role = user.role as string;
       }
       return session;
     },

@@ -3,46 +3,33 @@ import { PrismaClient } from "@prisma/client";
 import { Adapter } from "next-auth/adapters";
 
 export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
-  const originalAdapter = PrismaAdapter(prisma);
-  
+  const originalAdapter = PrismaAdapter(prisma) as any;
+
   return {
     ...originalAdapter,
     createUser: async (data: any) => {
-      const user = await prisma.user.create({
-        data: {
-          ...data,
-          slug: data.id, // Use the generated id as the slug
-        },
-      });
-      return { ...user, id: user.slug };
+      const user = await originalAdapter.createUser(data);
+      return { ...user, id: user.id };
     },
     getUser: async (id: string) => {
-      const user = await prisma.user.findUnique({ where: { slug: id } });
-      return user ? { ...user, id: user.slug } : null;
+      const user = await originalAdapter.getUser(id);
+      return user ? { ...user, id: user.id } : null;
     },
     getUserByEmail: async (email: string) => {
-      const user = await prisma.user.findUnique({ where: { email } });
-      return user ? { ...user, id: user.slug } : null;
+      const user = await originalAdapter.getUserByEmail(email);
+      return user ? { ...user, id: user.id } : null;
     },
-    getUserByAccount: async ({ providerAccountId, provider }: any) => {
-      const account = await prisma.account.findUnique({
-        where: {
-          provider_providerAccountId: {
-            provider,
-            providerAccountId,
-          },
-        },
-        include: { user: true },
-      });
-      return account?.user ? { ...account.user, id: account.user.slug } : null;
+    getUserByAccount: async (account: any) => {
+      const user = await originalAdapter.getUserByAccount(account);
+      return user ? { ...user, id: user.id } : null;
     },
-    updateUser: async ({ id, ...data }: any) => {
-      const user = await prisma.user.update({ where: { slug: id }, data });
-      return { ...user, id: user.slug };
+    updateUser: async (user: any) => {
+      const updatedUser = await originalAdapter.updateUser(user);
+      return { ...updatedUser, id: updatedUser.id };
     },
-    deleteUser: async (id: string) => {
-      const user = await prisma.user.delete({ where: { slug: id } });
-      return { ...user, id: user.slug };
+    deleteUser: async (userId: string) => {
+      const user = await originalAdapter.deleteUser(userId);
+      return user ? { ...user, id: user.id } : null;
     },
   };
 }
