@@ -24,18 +24,22 @@ const UtterancesComments: React.FC<UtterancesCommentsProps> = ({ repo, issueTerm
       async: 'true'
     }
     Object.entries(attributes).forEach(([key, value]) => {
-      script.setAttribute(key, value)
+      script.setAttribute(key, value as string)
     })
-    containerRef.current?.appendChild(script)
+    
+    const currentContainer = containerRef.current
+    currentContainer?.appendChild(script)
 
     return () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
+      if (currentContainer) {
+        currentContainer.innerHTML = ''
       }
     }
   }, [repo, issueTerm, label, theme])
 
   return <div ref={containerRef} />
 }
+
+UtterancesComments.displayName = 'UtterancesComments'
 
 export default UtterancesComments

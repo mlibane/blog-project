@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -19,29 +19,20 @@ interface CommentsProps {
   postId: string
 }
 
-const CommentItem = React.memo(({ comment }: { comment: Comment }) => (
-    <div key={comment.id} className="border p-4 rounded-md">
-      <p>{comment.content}</p>
-      <p className="text-sm text-gray-500 mt-2">
-        By {comment.author.name} on {new Date(comment.createdAt).toLocaleDateString()}
-      </p>
-    </div>
-  ))
-
 const Comments: React.FC<CommentsProps> = ({ postId }) => {
   const [comments, setComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState('')
   const { data: session } = useSession()
 
-  useEffect(() => {
-    fetchComments()
-  }, [postId])
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     const response = await fetch(`/api/posts/${postId}/comments`)
     const data = await response.json()
     setComments(data)
-  }
+  }, [postId])
+
+  useEffect(() => {
+    fetchComments()
+  }, [fetchComments])
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -90,5 +81,7 @@ const Comments: React.FC<CommentsProps> = ({ postId }) => {
     </div>
   )
 }
+
+Comments.displayName = 'Comments'
 
 export default Comments
