@@ -19,6 +19,15 @@ interface CommentsProps {
   postId: string
 }
 
+const CommentItem = React.memo(({ comment }: { comment: Comment }) => (
+    <div key={comment.id} className="border p-4 rounded-md">
+      <p>{comment.content}</p>
+      <p className="text-sm text-gray-500 mt-2">
+        By {comment.author.name} on {new Date(comment.createdAt).toLocaleDateString()}
+      </p>
+    </div>
+  ))
+
 const Comments: React.FC<CommentsProps> = ({ postId }) => {
   const [comments, setComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState('')

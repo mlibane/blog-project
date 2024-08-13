@@ -1,5 +1,5 @@
-import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
+import prisma from '@/lib/prisma'
 import UtterancesComments from '@/components/blog/UtterancesComments'
 import Comments from '@/components/blog/Comments'
 import SEO from '@/components/SEO'
@@ -11,6 +11,11 @@ async function getPost(id: string) {
   })
   if (!post) notFound()
   return post
+}
+
+export async function generateStaticParams() {
+  const posts = await prisma.post.findMany({ select: { id: true } })
+  return posts.map((post) => ({ id: post.id }))
 }
 
 export default async function BlogPost({ params }: { params: { id: string } }) {
@@ -40,3 +45,5 @@ export default async function BlogPost({ params }: { params: { id: string } }) {
     </>
   )
 }
+
+export const revalidate = 3600 // Revalidate every hour

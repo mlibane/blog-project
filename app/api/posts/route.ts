@@ -19,8 +19,11 @@ export async function GET(request: Request) {
 
   const total = await prisma.post.count({ where: { published: true } })
 
-  return NextResponse.json({ posts, total, page, limit })
+  const response = NextResponse.json({ posts, total, page, limit })
+  response.headers.set('Cache-Control', 's-maxage=60, stale-while-revalidate')
+  return response
 }
+
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
