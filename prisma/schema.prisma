@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Comment {
-  slug        String   @id @default(cuid())
+  slug      String   @id @default(cuid())
   content   String
   author    User     @relation("UserComments", fields: [authorId], references: [slug])
   authorId  String
@@ -19,24 +19,24 @@ model Comment {
 }
 
 model User {
-  slug            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  role          String    @default("USER")
-  posts         Post[]    @relation("UserPosts")
-  comments      Comment[] @relation("UserComments")
-  savedPosts    Post[]    @relation("SavedPosts")
-  readPosts     Post[]    @relation("ReadPosts")
+  slug                String    @id @default(cuid())
+  name                String?
+  email               String    @unique
+  emailVerified       DateTime?
+  image               String?
+  password            String?
+  role                String    @default("USER")
+  posts               Post[]    @relation("UserPosts")
+  comments            Comment[] @relation("UserComments")
+  savedPosts          Post[]    @relation("SavedPosts")
+  readPosts           Post[]    @relation("ReadPosts")
   preferredCategories Category[] @relation("UserPreferredCategories")
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 }
 
 model Post {
-  slug          String    @id @default(cuid())
+  slug        String    @id @default(cuid())
   title       String
   content     String
   published   Boolean   @default(false)
@@ -45,7 +45,7 @@ model Post {
   comments    Comment[] @relation("PostComments")
   category    Category? @relation(fields: [categoryId], references: [slug])
   categoryId  String?
-  tags        Tag[]
+  tags        Tag[]     @relation("PostTags")
   savedBy     User[]    @relation("SavedPosts")
   readBy      User[]    @relation("ReadPosts")
   createdAt   DateTime  @default(now())
@@ -54,14 +54,14 @@ model Post {
 }
 
 model Category {
-  id        String @id @default(cuid())
-  name      String @unique
-  posts     Post[]
+  slug        String @id @default(cuid())
+  name        String @unique
+  posts       Post[]
   preferredBy User[] @relation("UserPreferredCategories")
 }
 
 model Tag {
-  id    String @id @default(cuid())
+  slug  String @id @default(cuid())
   name  String @unique
   posts Post[] @relation("PostTags")
 }

@@ -1,6 +1,5 @@
 import { SessionProvider } from '@/components/session-provider'
 import { ThemeProvider } from '@/components/theme-provider'
-import SkipToContent from '@/components/SkipToContent'
 import PlausibleAnalytics from '@/components/PlausibleAnalytics'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
