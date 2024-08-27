@@ -1,3 +1,5 @@
+// components\SEO.tsx
+
 import Head from 'next/head'
 
 interface SEOProps {

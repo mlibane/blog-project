@@ -1,32 +1,38 @@
+// components/blog/LatestPosts.tsx
 import Link from 'next/link'
-import prisma from '@/lib/prisma'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-async function getLatestPosts() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    orderBy: { createdAt: 'desc' },
-    take: 5,
-    include: { author: { select: { name: true } } },
-  })
-  return posts
-}
-
-export default async function LatestPosts() {
-  const posts = await getLatestPosts()
+export default function LatestPosts() {
+  const posts = [
+    { id: 1, title: "Post Title", content: "Lorem ipsum dolor sit amet...", author: "Author Name", date: "18/08/2024" },
+    { id: 2, title: "Post Title", content: "Lorem ipsum dolor sit amet...", author: "Author Name", date: "18/08/2024" },
+    { id: 3, title: "Post Title", content: "Lorem ipsum dolor sit amet...", author: "Author Name", date: "18/08/2024" },
+  ]
 
   return (
-    <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">Latest Posts</h2>
-      <div className="space-y-4">
+    <section>
+      <h2 className="font-serif text-3xl font-semibold mb-8">Latest Posts</h2>
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (
-          <div key={post.id} className="border p-4 rounded-md">
-            <Link href={`/posts/${post.id}`} className="text-xl font-semibold hover:underline">
-              {post.title}
-            </Link>
-            <p className="text-gray-500 mt-2">By {post.author.name}</p>
-          </div>
+          <Card key={post.id} className="flex flex-col">
+            <CardHeader>
+              <CardTitle className="font-serif">{post.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col justify-between flex-grow">
+              <p className="text-muted-foreground mb-4">{post.content}</p>
+              <div>
+                <p className="text-sm text-muted-foreground mb-2">
+                  By {post.author} on {post.date}
+                </p>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href={`/posts/${post.id}`}>Read More</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
-    </div>
+    </section>
   )
 }

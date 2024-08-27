@@ -1,11 +1,16 @@
-'use client'
-
+// components/blog/RichTextEditor.tsx
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
-import { useState } from 'react'
+import Underline from '@tiptap/extension-underline'
+import { useState, useRef } from 'react'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import { lowlight } from 'lowlight'
+import { common, createLowlight } from 'lowlight'
+import { Bold, Italic, Underline as UnderlineIcon, Heading2, Image as ImageIcon } from "lucide-react"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Button } from "@/components/ui/button"
+
+const lowlight = createLowlight(common)
 
 interface RichTextEditorProps {
   content: string
@@ -14,6 +19,7 @@ interface RichTextEditorProps {
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange }) => {
   const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const editor = useEditor({
     extensions: [
@@ -21,6 +27,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange }) =>
         codeBlock: false,
       }),
       Image,
+      Underline,
       CodeBlockLowlight.configure({
         lowlight,
       }),
@@ -30,9 +37,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange }) =>
       onChange(editor.getHTML())
     },
   })
-  
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editor) return;
     const file = event.target.files?.[0]
     if (!file) return
 
@@ -53,45 +60,75 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange }) =>
       editor.chain().focus().setImage({ src: data.secure_url }).run()
     } catch (error) {
       console.error('Error uploading image:', error)
-      // Handle error (e.g., show a notification to the user)
     } finally {
       setIsUploading(false)
     }
   }
 
+  const triggerImageUpload = (e: React.MouseEvent) => {
+    e.preventDefault() // Prevent form submission
+    fileInputRef.current?.click()
+  }
+
+  if (!editor) {
+    return null;
+  }
+
   return (
     <div className="border rounded-md p-4">
-      <div className="mb-4 flex space-x-2">
-      <button
+      <ToggleGroup type="multiple" className="mb-4 justify-start">
+        <ToggleGroupItem
+          value="bold"
+          aria-label="Toggle bold"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`px-2 py-1 rounded ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
+          data-state={editor.isActive('bold') ? 'on' : 'off'}
         >
-          Bold
-        </button>
-        <button
+          <Bold className="h-4 w-4" />
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="italic"
+          aria-label="Toggle italic"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`px-2 py-1 rounded ${editor.isActive('italic') ? 'bg-gray-200' : ''}`}
+          data-state={editor.isActive('italic') ? 'on' : 'off'}
         >
-          Italic
-        </button>
-        <button
+          <Italic className="h-4 w-4" />
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="underline"
+          aria-label="Toggle underline"
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          data-state={editor.isActive('underline') ? 'on' : 'off'}
+        >
+          <UnderlineIcon className="h-4 w-4" />
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="heading"
+          aria-label="Toggle heading"
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`px-2 py-1 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}`}
+          data-state={editor.isActive('heading', { level: 2 }) ? 'on' : 'off'}
         >
-          H2
-        </button>
-        <label className="px-2 py-1 rounded bg-blue-500 text-white cursor-pointer">
-          {isUploading ? 'Uploading...' : 'Upload Image'}
-          <input
-            type="file"
-            className="hidden"
-            accept="image/*"
-            onChange={handleImageUpload}
-            disabled={isUploading}
-          />
-        </label>
-      </div>
-      <EditorContent editor={editor} />
+          <Heading2 className="h-4 w-4" />
+        </ToggleGroupItem>
+      </ToggleGroup>
+      <Button
+        variant="outline"
+        size="icon"
+        className="mr-2"
+        disabled={isUploading}
+        onClick={triggerImageUpload}
+      >
+        <ImageIcon className="h-4 w-4" />
+        <span className="sr-only">Upload Image</span>
+      </Button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        accept="image/*"
+        onChange={handleImageUpload}
+        disabled={isUploading}
+      />
+      <EditorContent editor={editor} className="prose dark:prose-invert max-w-none" />
     </div>
   )
 }

@@ -1,3 +1,5 @@
+// components\OptimizedImage.tsx
+
 import Image from 'next/image'
 
 interface OptimizedImageProps {

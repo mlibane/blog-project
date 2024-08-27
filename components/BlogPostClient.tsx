@@ -1,10 +1,14 @@
+// components\BlogPostClient.tsx
+
 'use client'
 
-import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import UtterancesComments from '@/components/blog/UtterancesComments'
 import Comments from '@/components/blog/Comments'
-import SEO from '@/components/SEO'
+import { Button } from "@/components/ui/button"
+import { useEffect, useState } from 'react'
+
 
 export default function BlogPostClient({ post }: { post: any }) {
   const { data: session } = useSession()
@@ -41,44 +45,41 @@ export default function BlogPostClient({ post }: { post: any }) {
   }
 
   return (
-    <>
-      <SEO 
-        title={`${post.title} | Your Blog Name`}
-        description={post.content.substring(0, 160)}
-        canonical={`/posts/${post.slug}`}
-      />
-      <div className="max-w-4xl mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-        <p className="text-gray-500 mb-4">By {post.author.name}</p>
-        {session && (
-          <div className="mb-4">
-            <button 
-              onClick={handleSave} 
-              disabled={isSaved}
-              className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
-            >
-              {isSaved ? 'Saved' : 'Save for Later'}
-            </button>
-            <button 
-              onClick={handleMarkAsRead} 
-              disabled={isRead}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              {isRead ? 'Read' : 'Mark as Read'}
-            </button>
-          </div>
-        )}
-        <div dangerouslySetInnerHTML={{ __html: post.content }} className="prose lg:prose-xl mb-8" />
-        
+    <article className="max-w-4xl mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+      <p className="text-gray-500 mb-4">By {post.author.name}</p>
+      {session && (
+        <div className="mb-4">
+          <Button onClick={handleSave} disabled={isSaved}>
+            {isSaved ? 'Saved' : 'Save for Later'}
+          </Button>
+          <Button onClick={handleMarkAsRead} disabled={isRead} className="ml-2">
+            {isRead ? 'Read' : 'Mark as Read'}
+          </Button>
+        </div>
+      )}
+      {post.imageUrl && (
+        <Image 
+          src={post.imageUrl} 
+          alt={post.title} 
+          width={1200} 
+          height={630} 
+          loading="lazy"
+          className="mb-4"
+        />
+      )}
+      <div dangerouslySetInnerHTML={{ __html: post.content }} className="prose lg:prose-xl mb-8" />
+      
+      <section>
         <h2 className="text-2xl font-bold mb-4">GitHub Comments</h2>
         <UtterancesComments
           repo="your-username/your-repo-name"
           issueTerm={`Post: ${post.slug}`}
           label="comments"
         />
-        
-        <Comments postId={post.id} />
-      </div>
-    </>
+      </section>
+      
+      <Comments postId={post.id} />
+    </article>
   )
 }

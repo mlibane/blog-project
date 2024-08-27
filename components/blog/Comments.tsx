@@ -1,87 +1,124 @@
+// components/blog/Comments.tsx
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface Comment {
   id: string
   content: string
   author: {
     name: string
-    email: string
+    image?: string
   }
   createdAt: string
 }
 
-interface CommentsProps {
-  postId: string
-}
-
-const Comments: React.FC<CommentsProps> = ({ postId }) => {
+export default function Comments({ postSlug }: { postSlug: string }) {
   const [comments, setComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState('')
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
   const { data: session } = useSession()
-
-  const fetchComments = useCallback(async () => {
-    const response = await fetch(`/api/posts/${postId}/comments`)
-    const data = await response.json()
-    setComments(data)
-  }, [postId])
 
   useEffect(() => {
     fetchComments()
-  }, [fetchComments])
+  }, [postSlug, page])
+
+  const fetchComments = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/posts/${postSlug}/comments?page=${page}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch comments')
+      }
+      const data = await response.json()
+      if (data.length === 0) {
+        setHasMore(false)
+      } else {
+        setComments(prevComments => [...prevComments, ...data])
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newComment.trim()) return
 
-    const response = await fetch(`/api/posts/${postId}/comments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content: newComment }),
-    })
+    try {
+      const response = await fetch(`/api/posts/${postSlug}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: newComment }),
+      })
 
-    if (response.ok) {
+      if (!response.ok) {
+        throw new Error('Failed to post comment')
+      }
+
+      const newCommentData = await response.json()
+      setComments(prevComments => [newCommentData, ...prevComments])
       setNewComment('')
-      fetchComments()
+    } catch (error) {
+      console.error('Error posting comment:', error)
     }
   }
 
   return (
-    <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">Comments</h2>
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold">Comments</h2>
       {session ? (
-        <form onSubmit={handleSubmitComment} className="mb-4">
+        <form onSubmit={handleSubmitComment} className="space-y-4">
           <Textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Write a comment..."
-            className="mb-2"
           />
           <Button type="submit">Post Comment</Button>
         </form>
       ) : (
-        <p className="mb-4">Please sign in to leave a comment.</p>
+        <p>Please sign in to leave a comment.</p>
       )}
       <div className="space-y-4">
         {comments.map((comment) => (
-          <div key={comment.id} className="border p-4 rounded-md">
-            <p>{comment.content}</p>
-            <p className="text-sm text-gray-500 mt-2">
-              By {comment.author.name} on {new Date(comment.createdAt).toLocaleDateString()}
-            </p>
-          </div>
+          <Card key={comment.id}>
+            <CardContent className="pt-6">
+              <div className="flex items-start space-x-4">
+                <Avatar>
+                  <AvatarImage src={comment.author.image} />
+                  <AvatarFallback>{comment.author.name[0]}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold">{comment.author.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(comment.createdAt).toLocaleDateString()}
+                  </p>
+                  <p className="mt-2">{comment.content}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
+      {!isLoading && comments.length > 0 && hasMore && (
+        <Button onClick={() => setPage(prevPage => prevPage + 1)}>
+          Load More Comments
+        </Button>
+      )}
+      {!isLoading && comments.length === 0 && (
+        <p>No comments yet. Be the first to comment!</p>
+      )}
     </div>
   )
 }
-
-Comments.displayName = 'Comments'
-
-export default Comments

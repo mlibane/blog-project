@@ -1,3 +1,5 @@
+// app\api\posts\[postId]\route.ts
+
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
@@ -32,9 +34,19 @@ export async function PUT(
   const { title, content, published } = json
 
   const post = await prisma.post.update({
-    where: { id: params.postId },
-    data: { title, content, published },
+    where: { slug: params.slug },
+    data: {
+      views: {
+        increment: 1,
+      },
+    },
+    include: { 
+      author: { select: { name: true } },
+      likes: true,
+      comments: true,
+    },
   })
+  
 
   return NextResponse.json(post)
 }

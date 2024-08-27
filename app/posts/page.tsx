@@ -1,45 +1,46 @@
-'use client'
+// app/posts/page.tsx
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions"
+import prisma from '@/lib/prisma'
+import { truncateHtml } from '@/lib/utils'
 
-interface Post {
-  id: string
-  title: string
-  author: {
-    name: string
-  }
-  content: string
-}
-
-export default function BlogList() {
-  const [posts, setPosts] = useState<Post[]>([])
-
-  useEffect(() => {
-    fetch('/api/posts')
-      .then(res => res.json())
-      .then(data => setPosts(data.posts))
-  }, [])
+export default async function Posts() {
+  const session = await getServerSession(authOptions)
+  const posts = await prisma.post.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { author: true },
+  })
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Blog Posts</h1>
-      <div className="space-y-4">
-        {posts.map((post, index) => (
-          <motion.div
-            key={post.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-            className="border p-4 rounded-md"
-          >
-            <Link href={`/posts/${post.id}`} className="text-xl font-semibold hover:underline">
-              {post.title}
-            </Link>
-            <p className="text-gray-500 mt-2">By {post.author.name}</p>
-            <p className="mt-2">{post.content.substring(0, 150)}...</p>
-          </motion.div>
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        <h1 className="font-serif text-4xl font-bold">Blog Posts</h1>
+        {session && (
+          <Button asChild>
+            <Link href="/create-post">Create New Post</Link>
+          </Button>
+        )}
+      </div>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {posts.map((post) => (
+          <Card key={post.id}>
+            <CardHeader>
+              <CardTitle className="font-serif">{post.title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                By {post.author.name} on {new Date(post.createdAt).toLocaleDateString()}
+              </p>
+              <div className="mb-4" dangerouslySetInnerHTML={{ __html: truncateHtml(post.content, 100) }} />
+              <Button asChild>
+                <Link href={`/posts/${post.id}`}>Read More</Link>
+              </Button>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>
