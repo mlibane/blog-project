@@ -195,6 +195,5 @@ For other platforms, refer to the [deployment guide](docs/DEPLOYMENT.md).
 </p>
 
 <p align="center">
-  <a href="https://twitter.com/yourusername"><img src="https://img.shields.io/twitter/follow/yourusername.svg?style=social" alt="Twitter Follow" /></a>
-  <a href="https://github.com/yourusername"><img src="https://img.shields.io/github/followers/yourusername.svg?label=Follow&style=social" alt="GitHub Follow" /></a>
+  <a href="https://github.com/yourusername"><img src="https://img.shields.io/github/followers/mlibane.svg?label=Follow&style=social" alt="GitHub Follow" /></a>
 </p>
