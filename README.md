@@ -1,40 +1,200 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Nidix: A Modern Blogging Platform 🚀
 
-## Getting Started
 
-First, run the development server:
+[![Next.js](https://img.shields.io/badge/Next.js-13.0+-000000?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.0+-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.0+-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13.0+-336791?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+[![GitHub license](https://img.shields.io/github/license/mlibane/nidix.svg)](https://github.com/mlibane/nidix/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/mlibane/nidix.svg)](https://github.com/mlibane/nidix/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/mlibane/nidix.svg)](https://github.com/mlibane/nidix/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/mlibane/nidix.svg)](https://github.com/mlibane/nidix/pulls)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Nidix is a cutting-edge blogging platform built with Next.js, TypeScript, and Tailwind CSS. It offers a seamless writing experience, powerful content management, and optimized performance for both readers and authors.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📚 Table of Contents
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Configuration](#-configuration)
+- [Usage](#-usage)
+- [Deployment](#-deployment)
+- [Acknowledgements](#-acknowledgements)
 
-## Learn More
+## ✨ Features
 
-To learn more about Next.js, take a look at the following resources:
+- 🖋 Rich text editor with Tiptap
+- 🔐 Secure authentication with NextAuth.js
+- 🌓 Dark mode support
+- 🎨 Customizable themes
+- 📊 SEO optimization
+- 🔍 Full-text search functionality
+- 📱 Responsive design
+- 🚀 Server-side rendering and static generation
+- 📂 Category and tag management
+- 💬 Commenting system with Utterances
+- 📈 Analytics integration
+- 🔔 Email notifications
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠 Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<details>
+<summary>Click to expand</summary>
 
-## Deploy on Vercel
+- **Frontend**:
+  - Next.js 13+ (App Router)
+  - React 18+
+  - TypeScript
+  - Tailwind CSS
+  - Framer Motion
+  - shadcn/ui components
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Backend**:
+  - Node.js
+  - Prisma ORM
+  - PostgreSQL
+  - tRPC
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-=======
-# blog-project
->>>>>>> origin/main
+- **Authentication**:
+  - NextAuth.js
+
+- **Testing**:
+  - Jest
+  - React Testing Library
+  - Cypress
+
+- **DevOps**:
+  - Docker
+  - GitHub Actions
+  - Vercel
+
+- **Monitoring**:
+  - Sentry
+  - Plausible Analytics
+
+</details>
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or later)
+- npm or yarn
+- PostgreSQL database
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/mlibane/nidix.git
+   cd nidix
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env.local
+   ```
+   Edit `.env.local` with your configuration.
+
+4. Set up the database:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+Visit `http://localhost:3000` to see the application.
+
+## ⚙ Configuration
+
+<details>
+<summary>Environment Variables</summary>
+
+- `DATABASE_URL`: Your PostgreSQL connection string
+- `NEXTAUTH_SECRET`: A random string for NextAuth.js
+- `GITHUB_ID` and `GITHUB_SECRET`: For GitHub OAuth
+- `GOOGLE_ID` and `GOOGLE_SECRET`: For Google OAuth
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: For image uploads
+- `NEXT_PUBLIC_SITE_URL`: Your production URL
+
+</details>
+
+## 📘 Usage
+
+1. **Creating a New Post**:
+   - Navigate to `/create-post`
+   - Use the rich text editor to write your content
+   - Add tags and select a category
+   - Publish or save as draft
+
+2. **Managing Posts**:
+   - Go to `/dashboard` to see all your posts
+   - Edit, delete, or change the status of posts
+
+3. **Customizing Your Profile**:
+   - Visit `/profile` to update your information
+   - Add a bio, social links, and profile picture
+
+
+## 🚢 Deployment
+
+Nidix is configured for easy deployment on Vercel:
+
+1. Fork this repository
+2. Create a new project on Vercel
+3. Connect your forked repository
+4. Set up environment variables
+5. Deploy!
+
+For other platforms, refer to the [deployment guide](docs/DEPLOYMENT.md).
+
+
+<details>
+<summary>Contribution process overview</summary>
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and commit them: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature/your-feature-name`
+5. Submit a pull request
+
+</details>
+
+## 👏 Acknowledgements
+
+- [Next.js](https://nextjs.org/) - The React Framework
+- [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework
+- [Prisma](https://www.prisma.io/) - Next-generation ORM
+- [NextAuth.js](https://next-auth.js.org/) - Authentication for Next.js
+- [Tiptap](https://tiptap.dev/) - The headless editor framework for web artisans
+- [Framer Motion](https://www.framer.com/motion/) - A production-ready motion library for React
+- [shadcn/ui](https://ui.shadcn.com/) - Re-usable components built using Radix UI and Tailwind CSS
+
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/mlibane">Libane</a>
+</p>
+
+<p align="center">
+  <a href="https://twitter.com/yourusername"><img src="https://img.shields.io/twitter/follow/yourusername.svg?style=social" alt="Twitter Follow" /></a>
+  <a href="https://github.com/yourusername"><img src="https://img.shields.io/github/followers/yourusername.svg?label=Follow&style=social" alt="GitHub Follow" /></a>
+</p>
