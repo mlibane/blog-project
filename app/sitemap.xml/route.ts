@@ -3,7 +3,7 @@
 import prisma from '@/lib/prisma'
 
 export async function GET() {
-  let posts = []
+  let posts: any[] = []
 
   try {
     posts = await prisma.post.findMany({ 

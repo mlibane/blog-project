@@ -76,7 +76,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange }) =>
 
   return (
     <div className="border rounded-md p-4">
-      <ToggleGroup type="multiple" className="mb-4 justify-start">
+      <ToggleGroup type="multiple" className="mb-4 justify-start space-x-1">
         <ToggleGroupItem
           value="bold"
           aria-label="Toggle bold"
@@ -109,17 +109,15 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange }) =>
         >
           <Heading2 className="h-4 w-4" />
         </ToggleGroupItem>
+        <ToggleGroupItem
+          value="image"
+          aria-label="Insert image"
+          onClick={triggerImageUpload}
+          disabled={isUploading}
+        >
+          <ImageIcon className="h-4 w-4" />
+        </ToggleGroupItem>
       </ToggleGroup>
-      <Button
-        variant="outline"
-        size="icon"
-        className="mr-2"
-        disabled={isUploading}
-        onClick={triggerImageUpload}
-      >
-        <ImageIcon className="h-4 w-4" />
-        <span className="sr-only">Upload Image</span>
-      </Button>
       <input
         ref={fileInputRef}
         type="file"

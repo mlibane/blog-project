@@ -3,13 +3,19 @@ import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function LatestPosts() {
-  const posts = [
-    { id: 1, title: "Post Title", content: "Lorem ipsum dolor sit amet...", author: "Author Name", date: "18/08/2024" },
-    { id: 2, title: "Post Title", content: "Lorem ipsum dolor sit amet...", author: "Author Name", date: "18/08/2024" },
-    { id: 3, title: "Post Title", content: "Lorem ipsum dolor sit amet...", author: "Author Name", date: "18/08/2024" },
-  ]
+interface Post {
+  id: string
+  title: string
+  excerpt: string
+  author: { name: string }
+  createdAt: string
+}
 
+interface LatestPostsProps {
+  posts: Post[]
+}
+
+export default function LatestPosts({ posts }: LatestPostsProps) {
   return (
     <section>
       <h2 className="font-serif text-3xl font-semibold mb-8">Latest Posts</h2>
@@ -20,10 +26,10 @@ export default function LatestPosts() {
               <CardTitle className="font-serif">{post.title}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col justify-between flex-grow">
-              <p className="text-muted-foreground mb-4">{post.content}</p>
+              <p className="text-muted-foreground mb-4">{post.excerpt}</p>
               <div>
                 <p className="text-sm text-muted-foreground mb-2">
-                  By {post.author} on {post.date}
+                  By {post.author.name} on {new Date(post.createdAt).toLocaleDateString()}
                 </p>
                 <Button asChild variant="outline" className="w-full">
                   <Link href={`/posts/${post.id}`}>Read More</Link>

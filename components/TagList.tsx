@@ -1,3 +1,5 @@
+// components\TagList.tsx
+
 import Link from 'next/link'
 
 interface Tag {
@@ -15,7 +17,7 @@ export default function TagList({ tags }: TagListProps) {
       {tags.map(tag => (
         <Link 
           key={tag.id} 
-          href={`/tags/${tag.id}`}
+          href={`/search/?q/${tag.id}`}
           className="bg-secondary text-secondary-foreground px-2 py-1 rounded-full text-sm hover:bg-secondary/80"
         >
           {tag.name}

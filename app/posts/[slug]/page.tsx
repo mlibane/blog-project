@@ -1,3 +1,5 @@
+// app\posts\[slug]\page.tsx
+
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"

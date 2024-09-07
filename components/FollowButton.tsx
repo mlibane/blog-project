@@ -1,3 +1,5 @@
+// components/FollowButton.tsx
+
 'use client'
 
 import { useState } from 'react'
@@ -5,12 +7,12 @@ import { Button } from "@/components/ui/button"
 import { useSession } from "next-auth/react"
 
 interface FollowButtonProps {
-  userId: string
+  id: string
   initialIsFollowing: boolean
   onFollowChange: (isFollowing: boolean) => void
 }
 
-export default function FollowButton({ userId, initialIsFollowing, onFollowChange }: FollowButtonProps) {
+export default function FollowButton({ id, initialIsFollowing, onFollowChange }: FollowButtonProps) {
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const [isLoading, setIsLoading] = useState(false)
   const { data: session } = useSession()
@@ -20,7 +22,7 @@ export default function FollowButton({ userId, initialIsFollowing, onFollowChang
 
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/users/${userId}/follow`, {
+      const response = await fetch(`/api/users/${id}/follow`, {
         method: isFollowing ? 'DELETE' : 'POST',
       })
 

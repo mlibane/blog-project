@@ -1,3 +1,5 @@
+// app\api\spotify\playlist-id\route.ts
+
 import { NextResponse } from 'next/server'
 import { getSpotifyApi } from '@/lib/spotify'
 

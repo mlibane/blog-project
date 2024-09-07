@@ -7,6 +7,7 @@ import { User, Post } from '@prisma/client'
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from 'next/link'
+import FollowButton from './FollowButton'
 
 interface UserProfileProps {
   user: User & { followers: User[], following: User[], posts: Post[] }
@@ -18,11 +19,8 @@ interface UserProfileProps {
 export default function UserProfile({ user, isOwnProfile, isFollowing, sessionUserId }: UserProfileProps) {
   const [following, setFollowing] = useState(isFollowing)
 
-  const handleFollow = async () => {
-    const res = await fetch(`/api/user/${user.id}/follow`, { method: 'POST' })
-    if (res.ok) {
-      setFollowing(!following)
-    }
+  const handleFollowChange = (newFollowState: boolean) => {
+    setFollowing(newFollowState)
   }
 
   return (
@@ -38,9 +36,11 @@ export default function UserProfile({ user, isOwnProfile, isFollowing, sessionUs
         </div>
       </div>
       {!isOwnProfile && sessionUserId && (
-        <Button onClick={handleFollow} className="mt-4">
-          {following ? 'Unfollow' : 'Follow'}
-        </Button>
+        <FollowButton
+          username={user.name || ''}
+          initialIsFollowing={following}
+          onFollowChange={handleFollowChange}
+        />
       )}
       <div className="mt-8">
         <h2 className="text-xl font-semibold mb-4">Recent Posts</h2>

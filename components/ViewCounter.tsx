@@ -1,3 +1,5 @@
+// components\ViewCounter.tsx
+
 import { Eye } from 'lucide-react'
 
 interface ViewCounterProps {

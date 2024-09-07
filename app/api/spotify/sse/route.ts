@@ -1,7 +1,7 @@
-// app/api/spotify/now-playing/route.ts
+// app/api/spotify/sse/route.ts
 
 import { getCurrentlyPlaying } from '@/lib/spotify'
-import { NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
 const SPOTIFY_API_URL = 'https://api.spotify.com/v1'
 let accessToken: string | null = null
@@ -29,7 +29,7 @@ async function refreshAccessToken() {
   tokenExpirationTime = Date.now() + data.expires_in * 1000
 }
 
-async function getcurrentlyPlaying() {
+async function getNowPlaying() {
   if (!accessToken || Date.now() > tokenExpirationTime) {
     await refreshAccessToken()
   }
@@ -57,6 +57,7 @@ async function getcurrentlyPlaying() {
       artist: data.item.artists[0].name,
       album: data.item.album.name,
       albumArt: data.item.album.images[0].url,
+      trackId: data.item.id,
       progress: data.progress_ms,
       duration: data.item.duration_ms,
       timestamp: Date.now(),
@@ -66,12 +67,39 @@ async function getcurrentlyPlaying() {
   return { isPlaying: false }
 }
 
-export async function GET() {
-  try {
-    const nowPlaying = await getCurrentlyPlaying(true);  // Force refresh on each request
-    return NextResponse.json(nowPlaying);
-  } catch (error) {
-    console.error('Error fetching now playing:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
+export const runtime = 'edge';
+
+export async function GET(req: NextRequest) {
+  const encoder = new TextEncoder();
+
+  let intervalId: NodeJS.Timeout;
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      intervalId = setInterval(async () => {
+        try {
+          const nowPlaying = await getCurrentlyPlaying(true);
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(nowPlaying)}\n\n`));
+        } catch (error) {
+          console.error('Error in SSE stream:', error);
+          if (error instanceof TypeError && error.message.includes('Controller is already closed')) {
+            clearInterval(intervalId);
+            return;
+          }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: 'Internal server error' })}\n\n`));
+        }
+      }, 3000);
+    },
+    cancel() {
+      clearInterval(intervalId);
+    }
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
 }

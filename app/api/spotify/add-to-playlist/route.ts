@@ -1,3 +1,5 @@
+// app/api/spotify/add-to-playlist/route.ts
+
 import { NextResponse } from 'next/server'
 import { addToNidixPlaylist } from '@/lib/spotify'
 

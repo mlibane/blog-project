@@ -2,7 +2,7 @@
 const nextConfig = {
   experimental: {
     workerThreads: false,
-    cpus: 1
+    cpus: 1,
   },
   typescript: {
     ignoreBuildErrors: true,
@@ -10,6 +10,15 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "i.scdn.co",
+      },
+    ],
+  },
+  swcMinify: false,
 };
 
 module.exports = nextConfig;

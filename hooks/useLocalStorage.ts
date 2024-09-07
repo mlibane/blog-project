@@ -1,3 +1,5 @@
+// hooks\useLocalStorage.ts
+
 import { useState, useEffect } from 'react'
 
 export function useLocalStorage<T>(key: string, initialValue: T) {

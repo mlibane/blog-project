@@ -1,3 +1,5 @@
+// app\[username]\page.tsx
+
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,11 +9,11 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions"
 import FollowButton from '@/components/FollowButton'
 
-async function getUser(username: string) {
+async function getUser(id: string) {
   const user = await prisma.user.findFirst({
     where: {
       name: {
-        equals: username,
+        equals: id,
         mode: 'insensitive'
       }
     },

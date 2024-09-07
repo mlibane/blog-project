@@ -5,10 +5,12 @@ const prisma = new PrismaClient()
 async function main() {
   const categories = [
     { name: 'Technology' },
-    { name: 'Science' },
+    { name: 'Culture' },
+    { name: 'Productivity' },
     { name: 'Health' },
-    { name: 'Business' },
-    { name: 'Arts' },
+    { name: 'Finance' },
+    { name: 'Entertainment' },
+    { name: 'Lifestyle' },
   ]
 
   for (const category of categories) {

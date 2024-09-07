@@ -1,3 +1,5 @@
+// app/api/users/[username]/follow/route.ts
+
 import { NextResponse } from 'next/server'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions"
@@ -5,7 +7,7 @@ import prisma from '@/lib/prisma'
 
 export async function POST(
   request: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: { username: string } }
 ) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
@@ -21,15 +23,15 @@ export async function POST(
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
 
-  const { userId } = params
+  const { username } = params
 
-  if (!userId) {
-    return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
+  if (!username) {
+    return NextResponse.json({ error: 'Invalid username' }, { status: 400 })
   }
 
   try {
     const userToFollow = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { name: username },
     })
 
     if (!userToFollow) {
@@ -37,7 +39,7 @@ export async function POST(
     }
 
     await prisma.user.update({
-      where: { id: userId },
+      where: { id: userToFollow.id },
       data: {
         followers: {
           connect: { id: follower.id }
@@ -54,7 +56,7 @@ export async function POST(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: { username: string } }
 ) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
@@ -70,9 +72,19 @@ export async function DELETE(
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
 
+  const { username } = params
+
   try {
+    const userToUnfollow = await prisma.user.findUnique({
+      where: { name: username },
+    })
+
+    if (!userToUnfollow) {
+      return NextResponse.json({ error: 'User to unfollow not found' }, { status: 404 })
+    }
+
     await prisma.user.update({
-      where: { id: params.userId },
+      where: { id: userToUnfollow.id },
       data: {
         followers: {
           disconnect: { id: follower.id }

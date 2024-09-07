@@ -1,5 +1,6 @@
 // lib/posts.ts
 import prisma from './prisma'
+import { stripHtml } from 'string-strip-html'
 
 export async function getLatestPosts(count = 3) {
   try {
@@ -19,7 +20,7 @@ export async function getLatestPosts(count = 3) {
       ...post,
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString(),
-      excerpt: post.content.substring(0, 150) + '...'
+      excerpt: stripHtml(post.content).result.substring(0, 150) + '...'
     }));
   } catch (error) {
     console.error("Failed to fetch latest posts:", error);

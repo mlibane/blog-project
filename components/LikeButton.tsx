@@ -1,3 +1,5 @@
+// components\LikeButton.tsx
+
 'use client'
 
 import { useState } from 'react'

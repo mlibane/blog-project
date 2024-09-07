@@ -1,59 +1,43 @@
-// app\page.tsx
-
-'use client'
-
-import { useSession } from 'next-auth/react'
-import Link from 'next/link'
-import { Button } from "@/components/ui/button"
+// app/page.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import NowPlaying from '@/components/NowPlaying'
+import { Button } from "@/components/ui/button"
+import Link from 'next/link'
+import { getLatestPosts } from '@/lib/posts'
+import Hero from '@/components/Hero'
 
-export default function Home() {
-  const { data: session } = useSession()
+export default async function Home() {
+  const latestPosts = await getLatestPosts(3)
 
   return (
     <div className="space-y-24">
-      <section className="text-center py-12">
-        <h1 className="font-zodiak text-5xl md:text-6xl font-bold mb-6">Welcome to Nidix</h1>
-        <p className="font-satoshi text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">A serene space for thoughts and ideas</p>
-        {session ? (
-          <Button asChild size="lg">
-            <Link href="/create-post">Create a New Post</Link>
-          </Button>
-        ) : (
-          <div className="space-x-6">
-            <Button asChild size="lg">
-              <Link href="/auth/signin">Sign In</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/auth/signup">Sign Up</Link>
-            </Button>
-          </div>
-        )}
-      </section>
+      <Hero />
       
       <section>
         <h2 className="font-cabinet-grotesk text-3xl font-semibold mb-8">Latest Posts</h2>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((post) => (
-            <Card key={post} className="flex flex-col">
-              <CardHeader>
-                <CardTitle className="font-cabinet-grotesk text-2xl">Post Title</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <p className="font-satoshi text-muted-foreground mb-6">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
-                <p className="font-satoshi text-sm text-muted-foreground mb-4">
-                  By Author Name on {new Date().toLocaleDateString()}
-                </p>
-                <Button asChild variant="ghost">
-                  <Link href={`/posts/${post}`}>Read More</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {latestPosts.length > 0 ? (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {latestPosts.map((post) => (
+              <Card key={post.id} className="flex flex-col">
+                <CardHeader>
+                  <CardTitle className="font-cabinet-grotesk text-2xl">{post.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <p className="font-satoshi text-muted-foreground mb-6">
+                    {post.excerpt}
+                  </p>
+                  <p className="font-satoshi text-sm text-muted-foreground mb-4">
+                    By {post.author.name} on {new Date(post.createdAt).toLocaleDateString()}
+                  </p>
+                  <Button asChild variant="ghost">
+                    <Link href={`/posts/${post.id}`}>Read More</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-muted-foreground">No posts available at the moment. Damn...🥺 </p>
+        )}
       </section>
     </div>
   )
